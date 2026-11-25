@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/png" href="img/logo.png">
+  <title>GhostTrace: lock files with an expiring key | Spectra Vault</title>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <a class="brand" href="index.html"><img src="img/logo.png" alt="Spectra Vault logo" width="24" height="24" style="border-radius:6px;object-fit:cover">Spectra Vault</a>
+      <nav aria-label="Main">
+        <ul>
+          <li><a href="index.html#products">Products</a></li>
+          <li><a href="index.html#how">How it works</a></li>
+          <li><a href="index.html#customers">Who it’s for</a></li>
+          <li><a href="ghosttrace.html" aria-current="page">GhostTrace</a></li>
+        </ul>
+      </nav>
+      <a class="btn" href="ghosttrace.html">Try GhostTrace</a>
+    </div>
+  </header>
+
+  <main class="tool">
+    <h1 style="font-size:38px">GhostTrace</h1>
+    <p class="lead" style="margin-bottom:0">Lock a file with a key that expires. Files are encrypted in your browser with AES-256, so they never leave your device.</p>
+
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tabLock" aria-selected="true" aria-controls="paneLock">Lock a file</button>
+      <button role="tab" id="tabUnlock" aria-selected="false" aria-controls="paneUnlock">Unlock a file</button>
+    </div>
+
+    <div id="paneLock" role="tabpanel">
+      <div class="field">
+        <label for="lockFile">File to protect</label>
+        <div class="dropzone" data-input="lockFile">
+          <input type="file" id="lockFile" class="dropzone-input">
+          <div class="dropzone-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <p class="dropzone-title">Drop a file here, or <span>browse</span></p>
+          <p class="dropzone-sub">Any file type · Encrypted locally in your browser</p>
+          <div class="dropzone-file" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="expiry">Key expires after</label>
+        <select id="expiry">
+          <option value="1">1 minute (demo)</option>
+          <option value="5">5 minutes</option>
+          <option value="60">1 hour</option>
+          <option value="1440">1 day</option>
+        </select>
+      </div>
+
+      <button class="btn" id="lockBtn">Lock file</button>
+      <div class="out" id="lockOut" aria-live="polite"></div>
+    </div>
+
+    <div id="paneUnlock" role="tabpanel" hidden>
+      <div class="field">
+        <label for="unlockFile">Locked file (.gvault)</label>
+        <div class="dropzone" data-input="unlockFile">
+          <input type="file" id="unlockFile" accept=".gvault" class="dropzone-input">
+          <div class="dropzone-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <p class="dropzone-title">Drop a <span>.gvault</span> file here, or <span>browse</span></p>
+          <p class="dropzone-sub">Only .gvault files are supported</p>
+          <div class="dropzone-file" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="keyIn">Key</label>
+        <input type="text" id="keyIn" autocomplete="off" spellcheck="false">
+      </div>
+
+      <button class="btn" id="unlockBtn">Unlock file</button>
+      <div class="out" id="unlockOut" aria-live="polite"></div>
+    </div>
+
+    <p class="note">Prototype note: the key registry that enforces expiry runs in this browser. In the full product it runs on Spectra Vault servers, so expiry applies to every device.</p>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>© 2026 Spectra Vault. Share secrets. Not risks.</span>
+      <span>Student project prototype</span>
+    </div>
+  </footer>
+
+  <script src="js/ghosttrace.js"></script>
+  <script>
+    document.querySelectorAll('.dropzone').forEach(zone => {
+      const input = zone.querySelector('.dropzone-input');
+      const fileInfo = zone.querySelector('.dropzone-file');
+
+      const formatSize = bytes => {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / 1048576).toFixed(2) + ' MB';
+      };
+
+      const updateUI = () => {
+        const file = input.files && input.files[0];
+        if (file) {
+          zone.classList.add('has-file');
+          fileInfo.textContent = `${file.name} (${formatSize(file.size)})`;
+        } else {
+          zone.classList.remove('has-file');
+          fileInfo.textContent = '';
+        }
+      };
+
+      input.addEventListener('change', updateUI);
+      ['dragenter', 'dragover'].forEach(evt =>
+        zone.addEventListener(evt, () => zone.classList.add('is-dragover'))
+      );
+      ['dragleave', 'drop'].forEach(evt =>
+        zone.addEventListener(evt, () => zone.classList.remove('is-dragover'))
+      );
+    });
+  </script>
+</body>
+</html>

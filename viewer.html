@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' blob: data:; media-src 'self' blob:; frame-src blob:; connect-src 'none'; object-src 'none';">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/viewer.css">
+  <link rel="icon" type="image/png" href="img/logo.png">
+  <title>Secure Viewer | GhostTrace</title>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <a class="brand" href="index.html"><img src="img/logo.png" alt="Spectra Vault logo" width="24" height="24" style="border-radius:6px;object-fit:cover">Spectra Vault</a>
+      <button class="btn ghost" id="vCloseBtn" type="button">Close &amp; Wipe</button>
+    </div>
+  </header>
+
+  <main class="tool">
+    <div id="vGate" class="out show">
+      <h3>Loading secure session…</h3>
+      <p>Waiting for decrypted file from GhostTrace.</p>
+    </div>
+
+    <section id="viewerPanel" class="viewer-panel" hidden>
+      <div class="viewer-bar">
+        <div>
+          <h3 id="vName">Untitled</h3>
+          <div class="viewer-meta">
+            <span class="chip ok">Read-only</span>
+            <span class="clock" id="vTimer">--:--</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="viewer-stage" id="vStage">
+        <div id="vContent"></div>
+        <div class="viewer-curtain" id="vCurtain" hidden>
+          <p>Window inactive — content hidden for privacy</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/viewer.js"></script>
+</body>
+</html>
